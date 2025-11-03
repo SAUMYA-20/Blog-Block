@@ -55,7 +55,7 @@ const connectDB = async (): Promise<void> => {
 connectDB();
 
 // Basic route
-app.get('/', (req: Request, res: Response): void => {
+app.get('/', (_req: Request, res: Response): void => {
   res.send('Blog API is running');
 });
 
@@ -66,7 +66,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/blogs', blogRoutes);
 
 // Handle 404 routes
-app.use((req: Request, res: Response): void => {
+app.use((_req: Request, res: Response): void => {
   res.status(404).json({ message: 'Route not found' });
 });
 
