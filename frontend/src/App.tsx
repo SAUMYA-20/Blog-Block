@@ -8,6 +8,7 @@ import PrivateRoute from './components/PrivateRoute';
 import BlogPostDetail from './components/BlogPostDetail';
 
 import Navbar from './components/Navbar';
+import Home from './components/Home';
 
 const App: React.FC = () => {
   // const context = useContext(AuthContext);
@@ -23,6 +24,7 @@ const App: React.FC = () => {
       <div className="App">
         <Navbar/>
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/blogs/:id" element={<BlogPostDetail />} />
@@ -33,6 +35,7 @@ const App: React.FC = () => {
           <Route path="/edit-blog/:id" element={<PrivateRoute element={BlogEditor} />} />
           <Route path="/" element={<Link to="/all-blogs" />} />
         </Routes>
+
       </div>
     </Router>
   );
