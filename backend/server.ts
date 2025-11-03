@@ -27,7 +27,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction): void => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction): void => {
   console.error(err.stack);
   res.status(500).json({ 
     message: 'Something went wrong!',
