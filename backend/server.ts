@@ -10,9 +10,22 @@ import blogRoutes from './routes/blogRoutes';
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://blog-block.vercel.app',
+  'https://blog-block-pkq9.vercel.app' // frontend domain
+];
+
+
 // CORS configuration
 const corsOptions: cors.CorsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Allow frontend origin
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed for this origin: ' + origin));
+    }
+  },
   credentials: true, // Allow cookies to be sent
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'x-auth-token'],
