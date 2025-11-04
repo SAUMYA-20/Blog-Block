@@ -11,7 +11,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchRecentBlogs = async () => {
       try {
-        const res = await api.get<Blog[]>('/api/blogs?limit=3');
+        const res = await api.get<Blog[]>('/api/blogs');
         setRecentBlogs(res.data);
       } catch (err) {
         console.error('Failed to load recent blogs');
@@ -25,12 +25,12 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen w-full relative">
       {/* Radial Gradient Background */}
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          background: "radial-gradient(125% 125% at 50% 90%, #fff 40%, #475569 100%)",
-        }}
-      />
+      <div className="absolute inset-0 z-0" style={{
+        backgroundImage: `
+        radial-gradient(circle at 20% 80%, rgba(120,119,198,0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.5) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120,119,198,0.1) 0%, transparent 50%)`,
+      }} />
 
       <div className="relative z-10 py-12 px-4 sm:px-6">
         {/* Hero Section */}

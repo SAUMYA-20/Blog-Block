@@ -1,97 +1,98 @@
-import dotenv from "dotenv";
-dotenv.config();
-import express, { Request, Response, NextFunction } from "express";
-import mongoose from "mongoose";
-import cors from "cors";
-import cookieParser from "cookie-parser";
-import path from "path";
-import authRoutes from "./routes/authRoutes";
-import blogRoutes from "./routes/blogRoutes";
+import 'dotenv/config';
+import express, { Request, Response, NextFunction } from 'express';
+import mongoose from 'mongoose';
+import cors, { CorsOptions } from 'cors';
+import cookieParser from 'cookie-parser';
+import path from 'path';
+import authRoutes from './routes/authRoutes';
+import blogRoutes from './routes/blogRoutes';
 
 const app = express();
 
 // Allowed origins
 const allowedOrigins = [
-  "http://localhost:5173",
-  "https://blog-block.vercel.app",
-  "https://blog-block-pkq9.vercel.app", // frontend domain
+  'http://localhost:5173',
+  'https://blog-block.vercel.app',
+  'https://blog-block-pkq9.vercel.app',
 ];
 
 // CORS configuration
-// CORS setup (first)
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // If no origin (server-to-server, curl, mobile apps), allow the request
-      if (!origin) return callback(null, true);
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.some((allowed) => origin === allowed.trim())) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'x-auth-token'],
+};
 
-      // Allow all origins when explicitly requested (useful for short-term debugging)
-      if (process.env.ALLOW_ALL_CORS === "true") return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // Not allowed
-      return callback(new Error("CORS policy: origin not allowed"));
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "x-auth-token"],
-  })
-);
-
-// Core middleware
+// Middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
 // Serve uploaded images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// MongoDB connection
+// Error handling middleware
+app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({
+    message: 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined,
+  });
+});
+
+// Connect to MongoDB with retry logic
 const connectDB = async (): Promise<void> => {
   try {
-    await mongoose.connect(
-      process.env.MONGODB_URI || "mongodb://localhost:27017/blogging"
-    );
-    console.log("MongoDB Connected");
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/blogging', {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    console.log('MongoDB Connected');
   } catch (err) {
-    console.error("MongoDB Connection Error:", err);
-    setTimeout(connectDB, 5000); // retry after 5s
+    console.error('MongoDB Connection Error:', err);
+    setTimeout(connectDB, 5000);
   }
 };
+
 connectDB();
 
 // Basic route
-app.get("/", (_req: Request, res: Response): void => {
-  res.send("Blog API is running");
+app.get('/', (_req: Request, res: Response) => {
+  res.send('Blog API is running');
 });
 
 // Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/blogs", blogRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/blogs', blogRoutes);
 
-// 404 handler
-app.use((_req: Request, res: Response): void => {
-  res.status(404).json({ message: "Route not found" });
+// Handle 404 routes
+app.use((_req: Request, res: Response) => {
+  res.status(404).json({ message: 'Route not found' });
 });
 
-// Global error handler (last)
-app.use(
-  (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
-    console.error("Error:", err.stack);
-    res.status(500).json({
-      message: "Something went wrong!",
-      error: process.env.NODE_ENV === "development" ? err.message : undefined,
-    });
-  }
-);
-
-// Start server locally
+// Start server
 const PORT = process.env.PORT || 5000;
-if (process.env.NODE_ENV !== "production") {
-  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
+const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-// Export for Vercel
-export default app;
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Promise Rejection:', reason);
+  // Note: In production, you might want to gracefully shut down here
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  server.close(() => {
+    process.exit(1);
+  });
+});

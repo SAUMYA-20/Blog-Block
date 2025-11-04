@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
           <Blocks width={26} height={26} stroke="#ffffff" /> {/* 🟣 animated icon */}
           <div>
             <Link
-              to="/all-blogs"
+              to="/"
               className="text-white text-xl font-bold hover:text-blue-300 transition-colors"
             >
               Blog Block
