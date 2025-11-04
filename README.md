@@ -265,7 +265,7 @@ Please include tests for new backend logic where appropriate and lint the fronte
 - If MongoDB connection fails, ensure `MONGODB_URI` is correct and the DB is reachable. The backend retries the connection but check logs for authentication errors.
 - If login fails with token errors, confirm `JWT_SECRET` matches between environment and any tokens issued earlier.
 
-![Alt text](./assets/1.png)
-![Alt text](./assets/2.png)
-![Alt text](./assets/3.png)
-![Alt text](./assets/4.png)
+![Alt text](frontend/src/assets/1.png)
+![Alt text](frontend/src/assets/2.png)
+![Alt text](frontend/src/assets/3.png)
+![Alt text](frontend/src/assets/4.png)
