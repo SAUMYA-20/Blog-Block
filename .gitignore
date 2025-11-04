@@ -9,4 +9,4 @@ backend/**/*.jsx
 backend/**/*.js
 
 backend/uploads
-backend/server.js
+backend/server.ts
