@@ -265,19 +265,7 @@ Please include tests for new backend logic where appropriate and lint the fronte
 - If MongoDB connection fails, ensure `MONGODB_URI` is correct and the DB is reachable. The backend retries the connection but check logs for authentication errors.
 - If login fails with token errors, confirm `JWT_SECRET` matches between environment and any tokens issued earlier.
 
-## Suggested next steps / improvements
-
-- Re-enable and test password hashing in `User.ts` before production.
-- Add unit/integration tests for critical backend flows (auth, blog CRUD, upload).
-- Add CI (GitHub Actions) for tests + linting.
-- Optionally containerize with Docker and add a docker-compose for local dev (MongoDB + backend + frontend).
-
----
-
-If you'd like, I can also:
-
-- Add a minimal `docker-compose.yml` for local development
-- Create CI workflow for linting and tests
-- Add example Postman collection for the API
-
-Tell me which of the above you'd like next and I'll prepare it.
+![Alt text](./assets/1 (1))
+![Alt text](./assets/1 (2))
+![Alt text](./assets/1 (3))
+![Alt text](./assets/1 (4))
