@@ -1,32 +1,36 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
-// Log the API URL for debugging
-console.log('API URL:', import.meta.env.VITE_API_URL);
+// ✅ Safely read API URL (with fallback for local dev)
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+console.log('API URL:', baseURL);
 
-const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL as string,
+const api = axios.create({
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Send cookies with requests
+  withCredentials: true, // include cookies if backend uses them
 });
 
-// Add a request interceptor to add the auth token to requests
-instance.interceptors.request.use(
+// ✅ Request interceptor — attach token to every request
+api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
-    if (token && config.headers) {
-      config.headers['x-auth-token'] = token;
+    if (typeof window !== 'undefined') { // prevent SSR crash
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Match your backend header name ("x-auth-token" or "Authorization")
+        config.headers['x-auth-token'] = token;
+        // Or use this if backend expects bearer tokens:
+        // config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  }
+  (error: AxiosError) => Promise.reject(error)
 );
 
-// Add a response interceptor for debugging
-instance.interceptors.response.use(
+// ✅ Response interceptor — useful logging and error catching
+api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {
     console.error('API Error:', {
@@ -35,9 +39,16 @@ instance.interceptors.response.use(
       status: error.response?.status,
       data: error.response?.data,
     });
+
+    // Optional: handle auth expiration globally
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      // Optionally redirect to login page
+      // window.location.href = '/login';
+    }
+
     return Promise.reject(error);
   }
 );
 
-export default instance;
-
+export default api;
