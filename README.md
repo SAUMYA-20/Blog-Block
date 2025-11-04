@@ -9,6 +9,8 @@ This repository contains a full-stack blogging application with a TypeScript/Nod
 
 This README documents how to run the project locally, required environment variables, API endpoints and useful developer notes.
 
+Also the frontend has been deployed on vercel and backend on render.
+
 ## Table of contents
 
 - Features
@@ -65,37 +67,39 @@ Top-level folders:
 
 
 ## Project Structure
+```bash
 blog-block/
 ├── backend/
-│   ├── models/
-│   │   ├── User.ts
-│   │   └── Blog.ts
-│   ├── routes/
-│   │   ├── authRoutes.ts
-│   │   └── blogRoutes.ts
-│   ├── controllers/
-│   │   ├── authController.ts
-│   │   └── blogController.ts
-│   ├── middleware/
-│   │   └── authMiddleware.ts
-│   ├── server.ts
-│   └── .env
+│ ├── models/
+│ │ ├── User.ts
+│ │ └── Blog.ts
+│ ├── routes/
+│ │ ├── authRoutes.ts
+│ │ └── blogRoutes.ts
+│ ├── controllers/
+│ │ ├── authController.ts
+│ │ └── blogController.ts
+│ ├── middleware/
+│ │ └── authMiddleware.ts
+│ ├── server.ts
+│ └── .env
 └── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── Navbar.tsx   ← Animated "Blocks" icon with Framer Motion  
-    │   │   ├── Blocks.tsx   ← Motion-based animated logo  
-    │   │   ├── BlogEditor.tsx  
-    │   │   ├── BlogList.tsx  
-    │   │   ├── Login.tsx  
-    │   │   └── Register.tsx  
-    │   ├── context/
-    │   │   └── AuthContext.tsx
-    │   ├── utils/
-    │   │   └── axios.ts
-    │   ├── App.tsx
-    │   └── main.tsx
-    └── .env
+├── src/
+│ ├── components/
+│ │ ├── Navbar.tsx ← Animated "Blocks" icon with Framer Motion
+│ │ ├── Blocks.tsx ← Motion-based animated logo
+│ │ ├── BlogEditor.tsx
+│ │ ├── BlogList.tsx
+│ │ ├── Login.tsx
+│ │ └── Register.tsx
+│ ├── context/
+│ │ └── AuthContext.tsx
+│ ├── utils/
+│ │ └── axios.ts
+│ ├── App.tsx
+│ └── main.tsx
+└── .env
+```
 
 
 ## Requirements
