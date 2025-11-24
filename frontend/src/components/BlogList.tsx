@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
+import { easeOut, motion } from 'framer-motion';
 import api from '../utils/axios';
 import { Link, useLocation } from 'react-router-dom';
 import AuthContext, { AuthContextType } from '../context/AuthContext';
@@ -46,18 +47,24 @@ const useToast = () => {
 
 // Skeleton Card Component
 const SkeletonCard: React.FC = () => (
-  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden animate-pulse">
-    <div className="h-48 bg-gray-200"></div>
-    <div className="p-5 space-y-4">
-      <div className="h-5 bg-gray-200 rounded w-3/4"></div>
-      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-      <div className="flex gap-2">
-        <div className="h-6 bg-gray-200 rounded-full w-16"></div>
-        <div className="h-6 bg-gray-200 rounded-full w-12"></div>
-      </div>
+  <div className="relative overflow-hidden rounded-3xl border border-white/15 bg-white/5 p-6 text-white backdrop-blur-2xl animate-pulse">
+    <div className="h-4 w-24 rounded-full bg-white/20" />
+    <div className="mt-6 h-6 w-3/4 rounded-full bg-white/25" />
+    <div className="mt-4 space-y-2">
+      <div className="h-3 rounded-full bg-white/15" />
+      <div className="h-3 w-2/3 rounded-full bg-white/15" />
     </div>
   </div>
 );
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.04, duration: 0.45, ease: easeOut },
+  }),
+};
 
 const BlogList: React.FC = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
@@ -132,17 +139,17 @@ const BlogList: React.FC = () => {
   const draftBlogs = blogs.filter(blog => blog.status === 'draft');
 
   const getPageTitle = (): string => {
-    if (isMyBlogsRoute) return 'My Published Blogs';
-    if (isMyDraftsRoute) return 'My Drafts';
-    return 'All Blogs Posts';
+    if (isMyBlogsRoute) return 'My TechShare Editions';
+    if (isMyDraftsRoute) return 'Draft Desk';
+    return 'Open Edition Archive';
   };
 
   const getPageTagline = (): string => {
     if (isMyBlogsRoute)
-      return 'Your published work is live! Keep sharing your voice.';
+      return 'Your editions are live for the community to read.';
     if (isMyDraftsRoute)
-      return 'Unfinished ideas with potential. Finish one today!';
-    return 'Discover stories, insights, and perspectives from our community.';
+      return 'Unfinished ideas with potential. Polish and publish the next drop.';
+    return 'Discover designer-grade stories, insights, and founder memos.';
   };
 
   // Check if blog was updated in the last 24 hours
@@ -154,37 +161,41 @@ const BlogList: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen w-full relative">
-        <div className="absolute inset-0 z-0" style={{ background: "radial-gradient(125% 125% at 50% 90%, #fff 40%, #475569 100%)" }} />
-        <div className="relative z-10 flex items-center justify-center h-screen">
-          <p className="text-red-600 text-lg">Error loading blogs: {error.message}</p>
+      <div className="relative flex min-h-screen items-center justify-center bg-[#05010b] text-white">
+        <div className="rounded-3xl border border-white/20 bg-white/5 px-8 py-10 text-center backdrop-blur-2xl">
+          <p className="text-lg font-semibold text-white/90">Error loading blogs: {error.message}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full relative">
-      <div className="absolute inset-0 z-0" style={{
-        backgroundImage: `
-        radial-gradient(circle at 20% 80%, rgba(120,119,198,0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.5) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120,119,198,0.1) 0%, transparent 50%)`,
-      }} />
+    <div className="relative min-h-screen overflow-hidden bg-[#05010b] text-white">
+      <div
+        className="absolute inset-0 opacity-90"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 10% 0%, rgba(225,187,255,0.35), transparent 45%),
+            radial-gradient(circle at 80% 10%, rgba(99,47,161,0.45), transparent 50%),
+            radial-gradient(circle at 50% 80%, rgba(12,3,23,0.8), transparent 60%)
+          `,
+        }}
+      />
 
       {/* Toast Notification */}
       {toast.show && (
-        <div className="fixed top-4 right-4 z-50 bg-gray-800 text-white px-4 py-2 rounded-lg shadow-lg animate-fade-in">
+        <div className="fixed top-4 right-4 z-50 rounded-2xl border border-white/30 bg-white px-4 py-2 text-sm font-semibold text-purple-900 shadow-lg">
           {toast.message}
         </div>
       )}
 
-      <div className="relative z-10 py-12 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto">
+      <div className="relative z-10 px-4 py-12 sm:px-6">
+        <div className="mx-auto max-w-6xl space-y-12">
           {/* Page Header */}
-          <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-gray-800">{getPageTitle()}</h1>
-            <p className="text-gray-600 mt-3 max-w-2xl mx-auto">{getPageTagline()}</p>
+          <div className="text-center">
+            <p className="text-xs uppercase tracking-[0.4em] text-purple-100/80">TechShare</p>
+            <h1 className="mt-4 text-3xl font-semibold text-white sm:text-4xl">{getPageTitle()}</h1>
+            <p className="mx-auto mt-4 max-w-2xl text-base text-purple-100/80">{getPageTagline()}</p>
           </div>
 
           {/* Published Blogs */}
@@ -197,80 +208,72 @@ const BlogList: React.FC = () => {
           ) : (
             <>
               {publishedBlogs.length > 0 && (
-                <section className="mb-14">
-                  <h2 className="text-2xl font-semibold text-gray-700 mb-6 px-2 flex items-center gap-2">
-                    Published Posts
+                <section className="space-y-6">
+                  <div className="flex flex-col items-center gap-3 text-center md:flex-row md:justify-between md:text-left">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.4em] text-purple-100/80">
+                        Featured Editions
+                      </p>
+                      <h2 className="text-2xl font-semibold text-white">Published Cards</h2>
+                    </div>
                     {isAllBlogs && (
-                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
+                      <span className="rounded-full border border-white/20 px-4 py-1 text-xs font-semibold text-purple-100/90">
                         {publishedBlogs.length} live
                       </span>
                     )}
-                  </h2>
+                  </div>
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {publishedBlogs.map(blog => (
-                      <article
+                    {publishedBlogs.map((blog, index) => (
+                      <motion.article
                         key={blog._id}
-                        className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 transform hover:shadow-xl hover:-translate-y-1 cursor-pointer group"
+                        custom={index}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        variants={cardVariants}
+                        className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-white/20 bg-white text-purple-900 shadow-[0_18px_50px_rgba(82,40,168,0.25)]"
                       >
-                        <Link to={`/blogs/${blog._id}`} className="block">
-                          {blog.imageUrl ? (
-                            <div className="h-48 overflow-hidden relative">
-                              <img
-                                src={`${import.meta.env.VITE_API_URL}${blog.imageUrl}`}
-                                alt={blog.title}
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                              />
-                              {isNew(blog.updated_at) && (
-                                <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                  New
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="h-48 flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 relative">
-                              <span className="text-4xl font-bold text-gray-500">
-                                {getInitials(blog.title || 'Blog')}
-                              </span>
-                              {isNew(blog.updated_at) && (
-                                <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                  New
-                                </div>
-                              )}
+                        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#a855f7] via-white to-[#6366f1]" />
+                        <Link
+                          to={`/blogs/${blog._id}`}
+                          className="flex flex-1 flex-col gap-4 px-6 py-7"
+                        >
+                          <div className="flex items-center justify-between text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-purple-400">
+                            <span>Edition #{String(index + 1).padStart(2, '0')}</span>
+                            <span>{formatRelativeTime(blog.updated_at)}</span>
+                          </div>
+                          <h3 className="text-xl font-semibold leading-tight text-purple-900">
+                            {blog.title}
+                          </h3>
+                          <p className="text-sm text-purple-500">
+                            Published by {blog?.user?.username || 'Unknown Author'}
+                          </p>
+                          {blog.tags && blog.tags.length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {blog.tags.slice(0, 3).map((tag, i) => (
+                                <span
+                                  key={i}
+                                  className="rounded-full border border-purple-100/70 px-3 py-1 text-xs text-purple-500"
+                                  title={`Tag: ${tag}`}
+                                >
+                                  {tag}
+                                </span>
+                              ))}
                             </div>
                           )}
-                          <div className="p-5">
-                            <h3 className="text-lg font-bold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
-                              {blog.title}
-                            </h3>
-                            <p className="text-sm text-gray-500 mt-1">
-                              {formatRelativeTime(blog.updated_at)}
-                            </p>
-                            <p className="text-sm text-gray-500 mt-1">
-                              Published By: {blog?.user?.username || "Unknown Author"}
-                            </p>
-
-                            {blog.tags && blog.tags.length > 0 && (
-                              <div className="mt-2 flex flex-wrap gap-1">
-                                {blog.tags.slice(0, 3).map((tag, i) => (
-                                  <span
-                                    key={i}
-                                    className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full hover:bg-gray-200 transition-colors cursor-default"
-                                    title={`Tag: ${tag}`}
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                          {isNew(blog.updated_at) && (
+                            <span className="mt-4 inline-flex items-center rounded-full bg-gradient-to-r from-purple-500 to-pink-400 px-3 py-1 text-xs font-semibold text-white shadow-lg">
+                              New drop
+                            </span>
+                          )}
                         </Link>
 
                         {/* Action Buttons (only for owner) */}
                         {showDeleteButtons && (
-                          <div className="px-5 pb-5 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="flex gap-2 border-t border-purple-50/80 px-6 py-4">
                             <Link
                               to={`/edit-blog/${blog._id}`}
-                              className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors flex-1 text-center py-1.5 bg-blue-50 rounded-lg hover:bg-blue-100"
+                              className="flex-1 rounded-2xl border border-purple-200/70 px-4 py-2 text-center text-sm font-semibold text-purple-700 transition-colors duration-300 hover:bg-purple-50"
                             >
                               Edit
                             </Link>
@@ -279,7 +282,7 @@ const BlogList: React.FC = () => {
                                 e.preventDefault();
                                 handleDelete(blog._id);
                               }}
-                              className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors flex-1 text-center py-1.5 bg-red-50 rounded-lg hover:bg-red-100"
+                              className="flex-1 rounded-2xl border border-red-200 px-4 py-2 text-center text-sm font-semibold text-red-600 transition-colors duration-300 hover:bg-red-50"
                             >
                               Delete
                             </button>
@@ -294,15 +297,26 @@ const BlogList: React.FC = () => {
                               e.stopPropagation();
                               handleCopyLink(blog._id);
                             }}
-                            className="absolute top-3 right-3 text-gray-400 hover:text-blue-600 transition-colors opacity-0 group-hover:opacity-100"
+                            className="absolute right-5 top-5 rounded-full border border-purple-100/80 bg-white/80 p-2 text-purple-600 opacity-0 shadow-lg transition-all duration-300 group-hover:opacity-100"
                             aria-label="Copy link"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="h-4 w-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
+                              />
                             </svg>
                           </button>
                         )}
-                      </article>
+                      </motion.article>
                     ))}
                   </div>
                 </section>
@@ -310,38 +324,46 @@ const BlogList: React.FC = () => {
 
               {/* Drafts */}
               {draftBlogs.length > 0 && (
-                <section>
-                  <h2 className="text-2xl font-semibold text-gray-700 mb-6 px-2">
-                    Drafts
-                    <span className="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full ml-2">
-                      {draftBlogs.length}
+                <section className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold text-white">Draft Studio</h2>
+                    <span className="rounded-full border border-white/20 px-4 py-1 text-xs font-semibold text-purple-100/90">
+                      {draftBlogs.length} pending
                     </span>
-                  </h2>
+                  </div>
                   <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {draftBlogs.map(blog => (
-                      <article
+                    {draftBlogs.map((blog, index) => (
+                      <motion.article
                         key={blog._id}
-                        className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl overflow-hidden hover:bg-gray-100 transition-colors group"
+                        custom={index}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                        variants={cardVariants}
+                        className="rounded-3xl border border-dashed border-white/30 bg-white/5 p-6 text-white backdrop-blur-2xl"
                       >
-                        <Link to={`/edit-blog/${blog._id}`} className="block p-5">
-                          <h3 className="text-lg font-bold text-gray-700 group-hover:text-gray-900 transition-colors line-clamp-2">
+                        <Link to={`/edit-blog/${blog._id}`} className="block">
+                          <p className="text-xs uppercase tracking-[0.4em] text-purple-200">
+                            Draft
+                          </p>
+                          <h3 className="mt-3 text-xl font-semibold text-white">
                             {blog.title || 'Untitled Draft'}
                           </h3>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="mt-2 text-sm text-purple-100/80">
                             Edited {formatRelativeTime(blog.updated_at)}
                           </p>
                         </Link>
                         {showDeleteButtons && (
-                          <div className="px-5 pb-4 flex justify-center">
+                          <div className="mt-4 flex justify-end">
                             <button
                               onClick={() => handleDelete(blog._id)}
-                              className="text-sm font-medium text-red-600 hover:text-red-800 transition-colors py-1.5 px-3 bg-red-50 rounded-lg hover:bg-red-100"
+                              className="rounded-2xl border border-red-200/70 px-4 py-2 text-sm font-semibold text-red-200 transition-colors duration-300 hover:bg-red-500/10"
                             >
                               Delete Draft
                             </button>
                           </div>
                         )}
-                      </article>
+                      </motion.article>
                     ))}
                   </div>
                 </section>
@@ -349,45 +371,27 @@ const BlogList: React.FC = () => {
 
               {/* Empty State */}
               {publishedBlogs.length === 0 && draftBlogs.length === 0 && (
-                <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-2xl max-w-2xl mx-auto px-6 border border-gray-200">
-                  {/* Optional: Inline SVG Illustration */}
-                  <div className="mx-auto w-24 h-24 mb-6 text-gray-400">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
-                    </svg>
+                <div className="mx-auto max-w-xl rounded-3xl border border-white/15 bg-white/5 px-6 py-16 text-center text-purple-100 backdrop-blur-2xl">
+                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/5 text-2xl">
+                    ✨
                   </div>
-                  <div className="text-gray-600 text-lg mb-4">
+                  <p className="text-lg font-semibold">
                     {isMyDraftsRoute
                       ? 'No drafts yet — start writing!'
                       : isMyBlogsRoute
                         ? 'Nothing published yet.'
-                        : 'No blogs to show right now.'}
-                  </div>
-                  {(!isMyDraftsRoute && !isMyBlogsRoute) && (
-                    <Link
-                      to="/create-blog"
-                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                      </svg>
-                      Write Your First Post
-                    </Link>
-                  )}
-                  {isMyDraftsRoute && (
-                    <Link
-                      to="/create-blog"
-                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-                      </svg>
-                      Create Draft
-                    </Link>
-                  )}
-                  {isMyBlogsRoute && (
-                    <p className="text-gray-500 mt-2">Finish and publish a draft to see it here.</p>
-                  )}
+                        : 'No editions to show right now.'}
+                  </p>
+                  <p className="mt-2 text-sm text-purple-100/80">
+                    Turn your next idea into a TechShare card.
+                  </p>
+                  <Link
+                    to="/create-blog"
+                    className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/80 px-6 py-3 text-sm font-semibold text-purple-900 shadow-lg shadow-purple-900/30 transition-transform duration-300 hover:-translate-y-0.5"
+                  >
+                    Compose Edition
+                    <span>→</span>
+                  </Link>
                 </div>
               )}
             </>

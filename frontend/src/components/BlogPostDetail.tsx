@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../utils/axios';
 import { Blog } from '../types';
+import 'react-quill-new/dist/quill.snow.css';
 
 const BlogPostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -93,6 +94,7 @@ const BlogPostDetail: React.FC = () => {
             dangerouslySetInnerHTML={{ __html: blog.content }}
           />
         </article>
+        
       </div>
     </div>
   );

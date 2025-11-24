@@ -2,9 +2,14 @@
 
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import AuthContext, { AuthContextType } from "../context/AuthContext";
 import { Blocks } from "./Blocks";
 
+const navVariants = {
+  hidden: { opacity: 0, y: -16 },
+  visible: { opacity: 1, y: 0 },
+};
 
 const Navbar: React.FC = () => {
   const context = useContext(AuthContext);
@@ -16,60 +21,74 @@ const Navbar: React.FC = () => {
   const { isAuthenticated, logout }: AuthContextType = context;
 
   return (
-    <nav
-      className="text-white py-4 px-4 sticky top-0 z-50 shadow-lg"
+    <motion.nav
+      initial="hidden"
+      animate="visible"
+      variants={navVariants}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="sticky top-0 z-50 px-4 py-4 text-white shadow-[0_10px_30px_rgba(88,28,135,0.35)] backdrop-blur-3xl"
       style={{
         background:
-          "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08) 0%, transparent 40%), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.05) 0%, transparent 40%), linear-gradient(120deg, #0f0e17 0%, #1a1b26 100%)",
+          "linear-gradient(135deg, rgba(82,40,168,0.9), rgba(163,120,255,0.85))",
+        borderBottom: "1px solid rgba(255,255,255,0.15)",
       }}
     >
-      <div className="container mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="container mx-auto flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Logo + Brand */}
-        <div className="flex items-center gap-3">
-          <Blocks width={26} height={26} stroke="#ffffff" /> {/* 🟣 animated icon */}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          className="flex items-center gap-3"
+        >
+          <Blocks width={28} height={28} stroke="#fde1ff" />
           <div>
             <Link
               to="/"
-              className="text-white text-xl font-bold hover:text-blue-300 transition-colors"
+              className="text-white text-2xl font-semibold tracking-tight hover:text-fuchsia-100 transition-colors"
             >
-              Blog Block
+              TechShare
             </Link>
-            <p className="text-sm text-gray-300 mt-1">Write. Share. Inspire.</p>
+            <motion.p
+              className="text-sm text-purple-100/80"
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            >
+              Daily creator briefing
+            </motion.p>
           </div>
-        </div>
+        </motion.div>
 
         {/* Navigation Links */}
-        <div className="flex flex-wrap justify-center gap-4 sm:gap-5">
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-5 text-sm font-medium">
           <Link
             to="/all-blogs"
-            className="text-gray-300 hover:text-white font-medium transition-colors"
+            className="rounded-full border border-white/15 px-4 py-2 text-white/90 transition-all duration-300 hover:border-white hover:bg-white/10"
           >
-            All Blogs
+            Editions
           </Link>
 
           {isAuthenticated ? (
             <>
               <Link
                 to="/my-blogs"
-                className="text-gray-300 hover:text-white font-medium transition-colors"
+                className="rounded-full border border-white/15 px-4 py-2 text-white/90 transition-all duration-300 hover:border-white hover:bg-white/10"
               >
-                My Blogs
+                My Desk
               </Link>
               <Link
                 to="/my-drafts"
-                className="text-gray-300 hover:text-white font-medium transition-colors"
+                className="rounded-full border border-white/15 px-4 py-2 text-white/90 transition-all duration-300 hover:border-white hover:bg-white/10"
               >
-                Drafts
+                Draft Box
               </Link>
               <Link
                 to="/create-blog"
-                className="text-gray-300 hover:text-white font-medium transition-colors"
+                className="rounded-full bg-white/90 px-5 py-2 text-purple-800 shadow-lg shadow-purple-900/30 transition-transform duration-300 hover:-translate-y-0.5"
               >
-                New Post
+                Publish
               </Link>
               <button
                 onClick={logout}
-                className="text-gray-300 hover:text-red-300 font-medium transition-colors focus:outline-none"
+                className="rounded-full border border-white/15 px-4 py-2 text-white/90 transition-all duration-300 hover:border-transparent hover:bg-red-400/20 hover:text-white"
                 aria-label="Logout"
               >
                 Logout
@@ -79,13 +98,13 @@ const Navbar: React.FC = () => {
             <>
               <Link
                 to="/register"
-                className="text-gray-300 hover:text-white font-medium transition-colors"
+                className="rounded-full border border-white/15 px-4 py-2 text-white/90 transition-all duration-300 hover:border-white hover:bg-white/10"
               >
-                Register
+                Join
               </Link>
               <Link
                 to="/login"
-                className="text-gray-300 hover:text-white font-medium transition-colors"
+                className="rounded-full border border-white/15 px-4 py-2 text-white/90 transition-all duration-300 hover:border-white hover:bg-white/10"
               >
                 Login
               </Link>
@@ -93,7 +112,7 @@ const Navbar: React.FC = () => {
           )}
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
